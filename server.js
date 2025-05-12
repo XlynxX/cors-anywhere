@@ -40,7 +40,7 @@ cors_proxy.createServer({
   ],
   httpProxyOptions: {
     // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
-    xfwd: false,
+    xfwd: true,
     // Forward cookies from the client to the target server
     headers: {
       // This ensures cookies from the incoming request are included in the forwarded request
