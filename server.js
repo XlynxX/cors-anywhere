@@ -21,39 +21,42 @@ var checkRateLimit = require('./lib/rate-limit')(process.env.CORSANYWHERE_RATELI
 
 var cors_proxy = require('./lib/cors-anywhere');
 cors_proxy.createServer({
-  allowCredentials: true,  // Allow cookies and credentials to be sent
+  allowCredentials: true,  // Allow credentials (cookies)
   originBlacklist: originBlacklist,
   originWhitelist: originWhitelist,
   requireHeader: ['origin', 'x-requested-with'],
   checkRateLimit: checkRateLimit,
   removeHeaders: [
-    // Strip Heroku-specific headers
     'x-request-start',
     'x-request-id',
     'via',
     'connect-time',
     'total-route-time',
-    // Other Heroku added debug headers
-    // 'x-forwarded-for',
-    // 'x-forwarded-proto',
-    // 'x-forwarded-port',
   ],
   httpProxyOptions: {
-    // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
-    xfwd: true,
-    // Forward cookies from the client to the target server
+    xfwd: false,
     headers: {
-      // This ensures cookies from the incoming request are included in the forwarded request
-      'Cookie': (req) => req.headers['cookie'] || '', // Forward cookies
+      'Cookie': (req) => req.headers['cookie'] || '',  // Forward cookies
     },
   },
+  // Add CORS headers to allow credentials and preflight requests
   setHeaders: {
-    // Allow credentials in the response
-    'Access-Control-Allow-Origin': '*',  // Or restrict to a specific origin
+    'Access-Control-Allow-Origin': '*',  // Or restrict to specific origins
     'Access-Control-Allow-Credentials': 'true', // Allow cookies and credentials
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Accept, Origin, X-Requested-With, X-Custom-Header',
   },
 }).listen(port, host, function() {
   console.log('Running CORS Anywhere on ' + host + ':' + port);
+});
+
+// Handle OPTIONS preflight requests
+const express = require('express');
+const app = express();
+app.options('/cors-proxy/*', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept, Origin, X-Requested-With, X-Custom-Header');
+  res.status(204).end();  // No content response for OPTIONS request
 });
