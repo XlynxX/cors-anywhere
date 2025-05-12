@@ -21,7 +21,7 @@ var checkRateLimit = require('./lib/rate-limit')(process.env.CORSANYWHERE_RATELI
 
 var cors_proxy = require('./lib/cors-anywhere');
 cors_proxy.createServer({
-  allowCredentials: true,
+  allowCredentials: true,  // Allow cookies and credentials to be sent
   originBlacklist: originBlacklist,
   originWhitelist: originWhitelist,
   requireHeader: ['origin', 'x-requested-with'],
@@ -41,6 +41,11 @@ cors_proxy.createServer({
   httpProxyOptions: {
     // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
     xfwd: false,
+    // Forward cookies from the client to the target server
+    headers: {
+      // This ensures cookies from the incoming request are included in the forwarded request
+      'Cookie': (req) => req.headers['cookie'] || '', // Forward cookies
+    },
   },
 }).listen(port, host, function() {
   console.log('Running CORS Anywhere on ' + host + ':' + port);
