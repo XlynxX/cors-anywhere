@@ -1,21 +1,14 @@
-var http = require('http'),
-    httpProxy = require('http-proxy');
+const http = require('http');
+const httpProxy = require('http-proxy');
 
-//
-// Create a proxy server with custom application logic
-//
-var proxy = httpProxy.createProxyServer({});
+// Создаем прокси-сервер
+const proxy = httpProxy.createProxyServer({});
 
-//
-// Create your custom server and just call `proxy.web()` to proxy
-// a web request to the target passed in the options
-// also you can use `proxy.ws()` to proxy a websockets request
-//
-var server = http.createServer(function(req, res) {
-  // You can define here your custom logic to handle the request
-  // and then proxy the request.
-  proxy.web(req, res, { target: 'https://teleopti.nordic.webhelp.com' });
-});
-
-console.log("listening on port 10000")
-server.listen(10000);
+http.createServer((req, res) => {
+  // Прокси передает все заголовки и куки
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true'); // Это важно для отправки куков
+  
+  // Перенаправляем запрос
+  proxy.web(req, res, { target: 'https://teleopti.nordic.webhelp.com' }); 
+}).listen(10000);
