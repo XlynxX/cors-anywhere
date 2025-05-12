@@ -1,6 +1,13 @@
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors');
 const app = express();
+
+// Настроим CORS
+app.use(cors({
+  origin: '*',  // Разрешаем доступ только с вашего фронтенда (или "*" для всех доменов, но это не рекомендуется при использовании cookies)
+  credentials: true,  // Разрешаем отправку cookies
+}));
 
 // Настройка JSON для тела запроса
 app.use(express.json());
