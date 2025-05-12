@@ -47,6 +47,13 @@ cors_proxy.createServer({
       'Cookie': (req) => req.headers['cookie'] || '', // Forward cookies
     },
   },
+  setHeaders: {
+    // Allow credentials in the response
+    'Access-Control-Allow-Origin': '*',  // Or restrict to a specific origin
+    'Access-Control-Allow-Credentials': 'true', // Allow cookies and credentials
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Accept, Origin, X-Requested-With, X-Custom-Header',
+  },
 }).listen(port, host, function() {
   console.log('Running CORS Anywhere on ' + host + ':' + port);
 });
