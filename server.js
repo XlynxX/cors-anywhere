@@ -1,27 +1,36 @@
-// const http = require('http');
-// const httpProxy = require('http-proxy');
+const express = require('express');
+const axios = require('axios');
+const app = express();
 
-// // Создаем прокси-сервер
-// const proxy = httpProxy.createProxyServer({});
+// Настройка JSON для тела запроса
+app.use(express.json());
 
-// http.createServer((req, res) => {
-//   // Прокси передает все заголовки и куки
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader('Access-Control-Allow-Credentials', 'true'); // Это важно для отправки куков
-  
-//   // Перенаправляем запрос
-//   proxy.web(req, res, { target: 'https://teleopti.nordic.webhelp.com' }); 
-// }).listen(10000);
+// Один рут для получения данных
+app.post('/proxy', async (req, res) => {
+  const { targetUrl, cookie } = req.body; // targetUrl — целевой сервер, cookie — cookie для запроса
 
-const https = require('https');
-const httpProxy = require('http-proxy');
+  if (!targetUrl || !cookie) {
+    return res.status(400).json({ error: 'targetUrl и cookie обязательны!' });
+  }
 
-// Create custom agent that allows self-signed certificates
-const agent = new https.Agent({
-  rejectUnauthorized: false,
+  try {
+    // Отправляем запрос на другой сервер с использованием cookie
+    const response = await axios.get(targetUrl, {
+      headers: {
+        'Cookie': cookie, // Указываем cookie
+      },
+      withCredentials: true, // Разрешаем отправку cookies на целевой сервер
+    });
+
+    // Возвращаем данные, полученные от целевого сервера
+    res.json(response.data);
+  } catch (error) {
+    console.error('Ошибка при запросе:', error);
+    res.status(500).json({ error: 'Ошибка при запросе к целевому серверу' });
+  }
 });
 
-httpProxy.createProxyServer({
-  target: 'https://teleopti.nordic.webhelp.com',  // Your target server
-  agent: agent,
-}).listen(10000);
+// Запуск сервера на порту 3000
+app.listen(10000, () => {
+  console.log('Сервер запущен на порту 10000');
+});
