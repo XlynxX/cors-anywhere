@@ -33,7 +33,7 @@ app.post('/proxy', async (req, res) => {
     res.json(response.data);
   } catch (error) {
     console.error('Ошибка при запросе:', error);
-    res.status(500).json({ error: 'Ошибка при запросе к целевому серверу' });
+    res.status(500).json({ error: 'Ошибка при запросе к целевому серверу', track: error });
   }
 });
 
