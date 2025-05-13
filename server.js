@@ -20,13 +20,11 @@ app.post('/proxy', async (req, res) => {
     return res.status(400).json({ error: 'targetUrl и cookie обязательны!' });
   }
 
-  const cleanCookie = cookie.replace(/\r?\n|\r/g, '');
-
   try {
     // Отправляем запрос на другой сервер с использованием cookie
     const response = await axios.get(targetUrl, {
       headers: {
-        'Cookie': cleanCookie, // Указываем cookie
+        'Cookie': cookie, // Указываем cookie
       },
       withCredentials: true, // Разрешаем отправку cookies на целевой сервер
     });
