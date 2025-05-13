@@ -24,7 +24,7 @@ app.post('/proxy', async (req, res) => {
     // Отправляем запрос на другой сервер с использованием cookie
     const response = await axios.get(targetUrl, {
       headers: {
-        'Cookie': cookie, // Указываем cookie
+        'Cookie': encodeURIComponent(cookie), // Указываем cookie
       },
       withCredentials: true, // Разрешаем отправку cookies на целевой сервер
     });
