@@ -54,7 +54,7 @@ app.post('/auth', async (req, res) => {
 
   // If login fails, return the error message
   if (login.error) {
-    return res.status(401).send('Login failed! Please check your credentials.');
+    return res.status(401).send('Login failed! Please check your credentials.', login.error, login.details);
   }
 
 });
