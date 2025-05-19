@@ -64,6 +64,7 @@ async function tryLoginCalabrio(username, password) {
 
         return { username: userName, cookies: cookies };  // Return both username and cookies
     } catch (error) {
+        console.error('Login error:', error, error.message);
         return { error: 'Login failed', details: error.message };
     }
 }
