@@ -36,13 +36,17 @@ app.use(limiter);
 
 // /auth route to handle XSRF token fetching, Teleopti login, and WFM authentication
 app.post('/auth', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, authType } = req.body;
 
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required!' });
   }
 
-  const login = await tryLoginCalabrio(username, password);
+  if (!authType) {
+    return res.status(400).json({ error: 'Auth type required!' });
+  }
+
+  const login = await tryLoginCalabrio(username, password, authType);
   if (!login.error) {
     const cookies = login.cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
     // console.log('Cookies:', cookies);
@@ -89,6 +93,10 @@ app.post('/proxy', async (req, res) => {
       // Возвращаем данные, полученные от целевого сервера
       const contentType = response.headers['content-type'];
       const isHtml = contentType && contentType.includes('text/html');
+
+      if (isHtml) {
+        return res.status(200).send(response.data);
+      }
 
       res.json({ ...response.data, cookies: await jar.getCookies(targetUrl) });
     } catch (error) {

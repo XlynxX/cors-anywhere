@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 
-async function tryLoginCalabrio(username, password) {
+async function tryLoginCalabrio(username, password, authType = 'adfs') {
     try {
         const browser = await puppeteer.launch({
             headless: true,  // Ensure it's running in headless mode
@@ -40,14 +40,29 @@ async function tryLoginCalabrio(username, password) {
             waitUntil: 'domcontentloaded',
         });
 
-        await page.click('.teleopti');
-        await page.waitForSelector('#Username-input', { timeout: 5000 });
+        console.log(authType);
+        
 
-        // Optimized login process
-        await page.type('#Username-input', username, { delay: 0 });
-        await page.type('#Password-input', password, { delay: 0 });
-        await page.click('#check1');
-        await page.click('#Signin-button');
+        if (authType === 'adfs') {
+            await page.click('.adfs3');
+
+            await page.waitForSelector('#userNameInput', { timeout: 5000 });
+
+            await page.type('#userNameInput', username, { delay: 0 });
+            await page.type('#passwordInput', password, { delay: 0 });
+            await page.click('#submitButton');
+        }
+
+        if (authType !== 'adfs') {
+            await page.click('.teleopti');
+            await page.waitForSelector('#Username-input', { timeout: 5000 });
+
+            // Optimized login process
+            await page.type('#Username-input', username, { delay: 0 });
+            await page.type('#Password-input', password, { delay: 0 });
+            await page.click('#check1');
+            await page.click('#Signin-button');
+        }
 
         await page.waitForSelector('.user-name', { timeout: 5000 });
 
