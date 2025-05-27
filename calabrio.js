@@ -20,7 +20,7 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
                 '--devtools=false', // Disable devtools
                 '--disable-web-security', // Disable web security
                 
-                '--single-process', // Run in a single process
+                // '--single-process', // Run in a single process
                 '--no-zygote', // Disable zygote process
             ],
             ignoreHTTPSErrors: true,
