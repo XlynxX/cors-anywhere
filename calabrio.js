@@ -1,8 +1,10 @@
 const puppeteer = require('puppeteer');
+require('dotenv').config();
 
 async function tryLoginCalabrio(username, password, authType = 'adfs') {
     try {
         const browser = await puppeteer.launch({
+            executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : '/usr/bin/chromium-browser', // Ensure the path is correct
             headless: true,  // Ensure it's running in headless mode
             args: [
                 '--incognito',
@@ -17,6 +19,8 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
                 '--disable-notifications', // Disable notifications
                 '--devtools=false', // Disable devtools
                 '--disable-web-security', // Disable web security
+                
+                '--single-process', // Run in a single process
                 '--no-zygote', // Disable zygote process
             ],
             ignoreHTTPSErrors: true,
