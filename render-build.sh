@@ -10,6 +10,7 @@ mkdir -p $PUPPETEER_CACHE_DIR
 
 # Install Puppeteer and download Chrome
 npx puppeteer browsers install chrome
+npm run postinstall
 
 # Check if the Chromium binary exists in the Puppeteer cache
 echo "Checking if chromium exists..."
