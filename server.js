@@ -14,7 +14,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // Отключаем прове
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar }));
 
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 
 // Настроим CORS
 app.use(cors({
