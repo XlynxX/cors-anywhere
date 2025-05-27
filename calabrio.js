@@ -1,9 +1,14 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 require('dotenv').config();
+
+// Optional: If you'd like to disable webgl, true is the default.
+chromium.setGraphicsMode = false;
 
 async function tryLoginCalabrio(username, password, authType = 'adfs') {
     try {
         const browser = await puppeteer.launch({
+            executablePath: await chromium.executablePath(),
             // executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(), // Ensure the path is correct
             headless: true,  // Ensure it's running in headless mode
             args: [
