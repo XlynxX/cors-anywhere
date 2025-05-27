@@ -7,5 +7,5 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-CMD ["node", "src/index.js"]
+CMD ["npm", "start"]
 # Expose the port the app runs on
