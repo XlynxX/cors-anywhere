@@ -9,7 +9,7 @@ PUPPETEER_CACHE_DIR=/opt/render/.cache/puppeteer
 mkdir -p $PUPPETEER_CACHE_DIR
 
 # Install Puppeteer and download Chrome
-npx puppeteer install
+npx puppeteer browsers install chrome
 
 # Check if the Chromium binary exists in the Puppeteer cache
 echo "Checking if chromium exists..."
