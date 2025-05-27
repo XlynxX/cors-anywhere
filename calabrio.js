@@ -24,7 +24,7 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
                 '--disable-notifications', // Disable notifications
                 '--devtools=false', // Disable devtools
                 '--disable-web-security', // Disable web security
-                
+
                 // '--single-process', // Run in a single process
                 '--no-zygote', // Disable zygote process
             ],
@@ -48,9 +48,6 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
         await page.goto('https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/MyTime', {
             waitUntil: 'domcontentloaded',
         });
-
-        console.log(authType);
-        
 
         if (authType === 'adfs') {
             await page.click('.adfs3');
@@ -84,6 +81,9 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
         // console.log('Logged in as:', userName);
         // console.log('Cookies:', cookies);
 
+        for (const page of await browser.pages()) {
+            await page.close();
+        }
         await browser.close();
 
         return { username: userName, cookies: cookies };  // Return both username and cookies
