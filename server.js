@@ -2,11 +2,9 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-const e = require('express');
 const app = express();
 const { wrapper } = require('axios-cookiejar-support');
 const { CookieJar } = require('tough-cookie');
-const { createProxyMiddleware } = require('http-proxy-middleware');
 const { tryLoginCalabrio } = require('./calabrio');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // Отключаем проверку сертификата SSL (не рекомендуется для продакшн окружения)
@@ -35,6 +33,10 @@ const limiter = rateLimit({
 
 // Apply rate limiting to all requests
 app.use(limiter);
+
+app.post('/ping', async (req, res) => {
+  res.status(200).send('OK!');
+});
 
 // /auth route to handle XSRF token fetching, Teleopti login, and WFM authentication
 app.post('/auth', async (req, res) => {
