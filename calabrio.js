@@ -8,7 +8,7 @@ chromium.setGraphicsMode = false;
 async function tryLoginCalabrio(username, password, authType = 'adfs') {
     try {
         const browser = await puppeteer.launch({
-            executablePath: await chromium.executablePath(),
+            executablePath: process.env.NODE_ENV === 'production' ? await chromium.executablePath() : 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
             // executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(), // Ensure the path is correct
             headless: true,  // Ensure it's running in headless mode
             args: [
@@ -50,8 +50,8 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
         });
 
         if (authType === 'adfs') {
+            await page.waitForSelector('.adfs3');
             await page.click('.adfs3');
-
             await page.waitForSelector('#userNameInput', { timeout: 5000 });
 
             await page.type('#userNameInput', username, { delay: 0 });
@@ -60,6 +60,7 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
         }
 
         if (authType !== 'adfs') {
+            await page.waitForSelector('.teleopti');
             await page.click('.teleopti');
             await page.waitForSelector('#Username-input', { timeout: 5000 });
 
