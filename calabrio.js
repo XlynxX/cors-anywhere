@@ -71,7 +71,7 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
             await page.click('#Signin-button');
         }
 
-        await page.waitForSelector('.user-name', { timeout: 5000 });
+        await page.waitForSelector('.user-name');
 
         // Directly extract username and cookies in one go
         const [userName, cookies] = await Promise.all([
