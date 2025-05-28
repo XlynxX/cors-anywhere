@@ -34,7 +34,7 @@ const limiter = rateLimit({
 // Apply rate limiting to all requests
 app.use(limiter);
 
-app.post('/ping', async (req, res) => {
+app.get('/ping', async (req, res) => {
   res.status(200).send('OK!');
 });
 
