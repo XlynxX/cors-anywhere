@@ -70,18 +70,18 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
             });
 
             // Abort unnecessary requests early
-            await page.setRequestInterception(true);
-            page.on('request', (request) => {
-                const url = request.url();
-                if (url.startsWith('https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/Start/Config/SharedSettings') ||
-                    url.includes('.json') ||
-                    url.includes('.jpg') || url.includes('.png') ||
-                    url.endsWith('permissions')) {
-                    request.abort();
-                } else {
-                    request.continue();
-                }
-            });
+            // await page.setRequestInterception(true);
+            // page.on('request', (request) => {
+            //     const url = request.url();
+            //     if (url.startsWith('https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/Start/Config/SharedSettings') ||
+            //         url.includes('.json') ||
+            //         url.includes('.jpg') || url.includes('.png') ||
+            //         url.endsWith('permissions')) {
+            //         request.abort();
+            //     } else {
+            //         request.continue();
+            //     }
+            // });
 
             await page.goto('https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/MyTime', {
                 waitUntil: 'domcontentloaded',
