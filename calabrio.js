@@ -59,42 +59,45 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
             //     console.log('Request failed:', request.url(), request.failure().errorText);
             // });
 
-            // page.on('requestfinished', async (request) => {
-            //     // console.log('Request finished:', request.url());
+            page.on('requestfinished', async (request) => {
+                if (request.method() === 'OPTIONS') {
+                    return;
+                }
+                // console.log('Request finished:', request.url());
 
-            //     if (request.url().endsWith('SSO/ApplicationAuthenticationApi/Password')) {
-            //         const response = request.response();
-            //         if (response.ok()) {
-            //             const json = await response.json();
-            //             if (json.Failed) {
-            //                 reject({ error: 'Login failed', details: json.Message });
+                if (request.url().endsWith('SSO/ApplicationAuthenticationApi/Password')) {
+                    const response = request.response();
+                    if (response.ok()) {
+                        const json = await response.json();
+                        if (json.Failed) {
+                            reject({ error: 'Login failed', details: json.Message });
 
-            //                 for (const page of await browser.pages()) {
-            //                     await page.close();
-            //                 }
-            //                 await browser.close();
-            //             };
-            //         }
-            //     }
+                            for (const page of await browser.pages()) {
+                                await page.close();
+                            }
+                            await browser.close();
+                        };
+                    }
+                }
 
-            //     if (request.url().startsWith('https://sts.webhelp.com/adfs/ls/?wa=wsignin1.0') && request.url().includes('AuthenticationBridge')) {
-            //         const response = request.response();
-            //         const htmlString = await response.text();
+                if (request.url().startsWith('https://sts.webhelp.com/adfs/ls/?wa=wsignin1.0') && request.url().includes('AuthenticationBridge')) {
+                    const response = request.response();
+                    const htmlString = await response.text();
 
-            //         const regex = /<span id="errorText"[^>]*>(.*?)<\/span>/s;
-            //         const match = htmlString.match(regex);
+                    const regex = /<span id="errorText"[^>]*>(.*?)<\/span>/s;
+                    const match = htmlString.match(regex);
 
-            //         if (match && response.status() === 200) {
-            //             const errorText = match[1];
-            //             reject({ error: 'Login failed', details: errorText });
+                    if (match && response.status() === 200) {
+                        const errorText = match[1];
+                        reject({ error: 'Login failed', details: errorText });
 
-            //             for (const page of await browser.pages()) {
-            //                 await page.close();
-            //             }
-            //             await browser.close();
-            //         }
-            //     }
-            // });
+                        for (const page of await browser.pages()) {
+                            await page.close();
+                        }
+                        await browser.close();
+                    }
+                }
+            });
 
             await page.waitForSelector('.user-name', { timeout: 10000 });
             // Directly extract username and cookies in one go
