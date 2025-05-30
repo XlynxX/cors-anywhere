@@ -60,7 +60,7 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
             // });
 
             page.on('requestfinished', async (request) => {
-                if (request.method() === 'OPTIONS') {
+                if (request.method() !== 'POST') {
                     request.continue();
                     return;
                 }
