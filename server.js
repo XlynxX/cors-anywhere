@@ -50,21 +50,17 @@ app.post('/auth', async (req, res) => {
     return res.status(400).json({ error: 'Auth type required!' });
   }
 
-  const login = await tryLoginCalabrio(username, password, authType);
-  if (!login.error) {
+  tryLoginCalabrio(username, password, authType).then(login => {
     const cookies = login.cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
     // console.log('Cookies:', cookies);
 
     // Set cookies in the response
     res.setHeader('calabrio', cookies);
     return res.status(200).json({ username: login.username });
-  }
-
-  // If login fails, return the error message
-  if (login.error) {
-    return res.status(401).send('Login failed! Please check your credentials.', login.error, login.details);
-  }
-
+  })
+    .catch(error => {
+      return res.status(401).json({ error: error.details || 'Login failed' });
+    });
 });
 
 // Один рут для получения данных
