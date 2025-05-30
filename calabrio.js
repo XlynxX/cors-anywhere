@@ -61,9 +61,11 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
 
             page.on('requestfinished', async (request) => {
                 if (request.method() === 'OPTIONS') {
+                    request.continue();
                     return;
                 }
-                // console.log('Request finished:', request.url());
+                
+                console.log('Request finished:', request.url());
 
                 if (request.url().endsWith('SSO/ApplicationAuthenticationApi/Password')) {
                     const response = request.response();
