@@ -77,23 +77,23 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
                     }
                 }
 
-                if (request.url().startsWith('https://sts.webhelp.com/adfs/ls/?wa=wsignin1.0') && request.url().includes('AuthenticationBridge')) {
-                    const response = request.response();
-                    const htmlString = await response.text();
+                // if (request.url().startsWith('https://sts.webhelp.com/adfs/ls/?wa=wsignin1.0') && request.url().includes('AuthenticationBridge')) {
+                //     const response = request.response();
+                //     const htmlString = await response.text();
 
-                    const regex = /<span id="errorText"[^>]*>(.*?)<\/span>/s;
-                    const match = htmlString.match(regex);
+                //     const regex = /<span id="errorText"[^>]*>(.*?)<\/span>/s;
+                //     const match = htmlString.match(regex);
 
-                    if (match && response.status() === 200) {
-                        const errorText = match[1];
-                        reject({ error: 'Login failed', details: errorText });
+                //     if (match && response.status() === 200) {
+                //         const errorText = match[1];
+                //         reject({ error: 'Login failed', details: errorText });
 
-                        for (const page of await browser.pages()) {
-                            await page.close();
-                        }
-                        await browser.close();
-                    }
-                }
+                //         for (const page of await browser.pages()) {
+                //             await page.close();
+                //         }
+                //         await browser.close();
+                //     }
+                // }
             });
 
             await page.waitForSelector('.user-name', { timeout: 10000 });
