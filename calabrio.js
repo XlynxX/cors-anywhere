@@ -32,36 +32,7 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
 
             const page = await browser.newPage();
 
-            // Abort unnecessary requests early
-            await page.setRequestInterception(true);
-            page.on('request', (request) => {
-                const url = request.url();
-                if (url.startsWith('https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/Start/Config/SharedSettings') ||
-                    url.includes('.json') ||
-                    url.includes('.jpg') || url.includes('.png') ||
-                    url.endsWith('permissions')) {
-                    request.abort();
-                } else {
-                    request.continue();
-                }
-            });
-
-            await page.goto('https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/MyTime', {
-                waitUntil: 'domcontentloaded',
-            });
-
-            // Handle login attempt
-            await login(page, authType, username, password);
-
-            // page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
-            // page.on('error', (err) => console.error('Page error:', err));
-            // page.on('requestfailed', (request) => {
-            //     console.log('Request failed:', request.url(), request.failure().errorText);
-            // });
-
             page.on('requestfinished', async (request) => {
-                return;
-
                 console.log('Request finished:', request.url());
 
                 if (request.url().endsWith('SSO/ApplicationAuthenticationApi/Password')) {
@@ -97,6 +68,33 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
                     }
                 }
             });
+
+            // Abort unnecessary requests early
+            await page.setRequestInterception(true);
+            page.on('request', (request) => {
+                const url = request.url();
+                if (url.startsWith('https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/Start/Config/SharedSettings') ||
+                    url.includes('.json') ||
+                    url.includes('.jpg') || url.includes('.png') ||
+                    url.endsWith('permissions')) {
+                    request.abort();
+                } else {
+                    request.continue();
+                }
+            });
+
+            await page.goto('https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/MyTime', {
+                waitUntil: 'domcontentloaded',
+            });
+
+            // Handle login attempt
+            await login(page, authType, username, password);
+
+            // page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
+            // page.on('error', (err) => console.error('Page error:', err));
+            // page.on('requestfailed', (request) => {
+            //     console.log('Request failed:', request.url(), request.failure().errorText);
+            // });
 
             await page.waitForSelector('.user-name', { timeout: 10000 });
             // Directly extract username and cookies in one go
