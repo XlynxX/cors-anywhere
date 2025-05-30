@@ -10,7 +10,7 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
         try {
             const browser = await puppeteer.launch({
                 executablePath: process.env.NODE_ENV === 'production' ? await chromium.executablePath() : 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-                headless: false,  // Ensure it's running in headless mode
+                headless: true,  // Ensure it's running in headless mode
                 // slowMo: 125,  // Set to 0 for no delay, or adjust as needed
                 args: [
                     '--incognito',
