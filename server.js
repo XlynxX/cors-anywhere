@@ -26,8 +26,8 @@ app.use(express.json());
 
 // Rate Limiting: Allow 100 requests per 15 minutes
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 75, // Limit each IP to 100 requests per windowMs
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 35, // Limit each IP to 100 requests per windowMs
   message: 'Too many requests, please try again later.',
 });
 
@@ -107,44 +107,63 @@ app.post('/proxy', async (req, res) => {
 
   else {
     try {
-      // Prepare the form data body
-      const formData = new URLSearchParams();
 
-      // Add extra fields to form data (excluding targetUrl and cookie)
-      Object.entries(body).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-
-      if (isClient) {
-        const response = await client.post(targetUrl, formData, {
+      const response = await axios.post(
+        "https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/api/TeamSchedule/TeamSchedule",
+        {
+          ...body
+        },
+        {
           headers: {
-            'Cookie': cookie || '', // Include cookie if provided
-            'Content-Type': 'application/x-www-form-urlencoded', // Use x-www-form-urlencoded for form data
-            ...headers, // Include any additional headers provided in the request
-          },
-          withCredentials: true, // Allow sending cookies to the target server
-        });
+            "x-xsrf-token": cookie.split('; ')[1].split('=')[1],
+            "cookie": cookie,
+            ...headers,
+          }
+        }
+      );
+      
+      res.json(response.data)
 
-        // Return the response data from the target server
-        const cookies = response.headers['set-cookie'];
-        res.json({ ...response.data, cookies: cookies });
-      }
+      // SEEMS OUTDATED BECAUSE OF BROWSER LOGIN, INSTEAD OF REQUEST BASED
+      //
+      // // Prepare the form data body
+      // const formData = new URLSearchParams();
 
-      else {
-        // Sending request to the target server with cookie and form data
-        const response = await axios.post(targetUrl, formData, {
-          headers: {
-            'Cookie': cookie || '', // Include cookie if provided
-            'Content-Type': 'application/x-www-form-urlencoded', // Use x-www-form-urlencoded for form data
-            ...headers, // Include any additional headers provided in the request
-          },
-          withCredentials: true, // Allow sending cookies to the target server
-        });
+      // // Add extra fields to form data (excluding targetUrl and cookie)
+      // Object.entries(body).forEach(([key, value]) => {
+      //   formData.append(key, value);
+      // });
+      
+      // if (isClient) {
+      //   const response = await client.post(targetUrl, formData, {
+      //     headers: {
+      //       'Cookie': cookie || '', // Include cookie if provided
+      //       'Content-Type': 'application/x-www-form-urlencoded', // Use x-www-form-urlencoded for form data
+      //       ...headers, // Include any additional headers provided in the request
+      //     },
+      //     withCredentials: true, // Allow sending cookies to the target server
+      //   });
 
-        // Return the response data from the target server
-        const cookies = response.headers['set-cookie'];
-        res.json({ ...response.data, cookies: cookies });
-      }
+      //   // Return the response data from the target server
+      //   const cookies = response.headers['set-cookie'];
+      //   res.json({ ...response.data, cookies: cookies });
+      // }
+
+      // else {
+      //   // Sending request to the target server with cookie and form data
+      //   const response = await axios.post(targetUrl, formData, {
+      //     headers: {
+      //       'Cookie': cookie || '', // Include cookie if provided
+      //       'Content-Type': 'application/x-www-form-urlencoded', // Use x-www-form-urlencoded for form data
+      //       ...headers, // Include any additional headers provided in the request
+      //     },
+      //     withCredentials: true, // Allow sending cookies to the target server
+      //   });
+
+      //   // Return the response data from the target server
+      //   const cookies = response.headers['set-cookie'];
+      //   res.json({ ...response.data, cookies: cookies });
+      // }
 
     } catch (error) {
       console.error('Ошибка при запросе:', error);

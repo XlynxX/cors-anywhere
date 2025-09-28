@@ -73,12 +73,19 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
             await page.setRequestInterception(true);
             page.on('request', (request) => {
                 const url = request.url();
-                if (url.startsWith('https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/Start/Config/SharedSettings') ||
-                    url.includes('.json') ||
+                if (url.includes('.json') ||
                     url.includes('.jpg') || url.includes('.png') ||
                     url.endsWith('permissions')) {
                     request.abort();
                 } else {
+                    // if (url.includes('RedirectToSignIn')) {
+                    //     console.log(request.headers());
+                    // }
+                    
+                    if (url.startsWith('https://teleopti.nordic.webhelp.com/TeleoptiWFM/Web/SSO/ApplicationAuthenticationApi/Password')) {
+                        console.log(request.headers()['x-xsrf-token']);
+                    }
+
                     request.continue();
                 }
             });
@@ -108,7 +115,7 @@ async function tryLoginCalabrio(username, password, authType = 'adfs') {
             }
             await browser.close();
 
-            return resolve({ username: userName, cookies: cookies });
+            return resolve({ username: userName, cookies: cookies, xsrf: '' });
 
             // Check for login error (this won't block the flow)
             // checkForLoginError(page);
